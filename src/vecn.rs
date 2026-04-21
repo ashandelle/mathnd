@@ -4,7 +4,7 @@ use crate::{bivecn::BiVecN, matn::MatN, traits::{Abs, CosSin, One, Sqrt, Two, Ze
 
 #[derive(Debug, Clone, Copy)]
 pub struct VecN<T, const N: usize> {
-    pub(crate) e: [T; N]
+    pub e: [T; N]
 }
 
 impl<T, const N: usize> PartialEq for VecN<T, N> where T: PartialEq {
