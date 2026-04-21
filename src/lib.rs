@@ -5,10 +5,10 @@
 //     left + right
 // }
 
-mod vecn;
-mod matn;
-mod bivecn;
-mod traits;
+pub mod vecn;
+pub mod matn;
+pub mod bivecn;
+pub mod traits;
 
 #[cfg(test)]
 mod tests {
