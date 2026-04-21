@@ -1,6 +1,8 @@
 use std::{iter::Sum, ops::{Add, Div, Mul, Neg, Sub}};
 
-use crate::{matn::MatN, traits::{One, Sqrt, Two, Zero}};
+use num_traits::{One, Zero};
+
+use crate::{matn::MatN, traits::{Sqrt, Two}};
 
 #[derive(Debug, Clone, Copy)]
 pub struct BiVecN<T, const N: usize> {

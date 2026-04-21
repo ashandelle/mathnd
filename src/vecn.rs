@@ -1,6 +1,8 @@
 use std::{iter::Sum, ops::{Add, AddAssign, BitXor, Div, Mul, Neg, Sub}};
 
-use crate::{bivecn::BiVecN, matn::MatN, traits::{Abs, CosSin, One, Sqrt, Two, Zero}};
+use num_traits::{One, Signed, Zero};
+
+use crate::{bivecn::BiVecN, matn::MatN, traits::{CosSin, Sqrt, Two}};
 
 #[derive(Debug, Clone, Copy)]
 pub struct VecN<T, const N: usize> {
@@ -111,7 +113,7 @@ impl<T, const N: usize> VecN<T, N> {
                 .sum::<T>()
     }
 
-    pub fn orthonormal_basis(&self) -> [VecN<T, N>; N-1] where T: Neg<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + PartialOrd + Sum + Sqrt + Abs + Zero + One + Copy {
+    pub fn orthonormal_basis(&self) -> [VecN<T, N>; N-1] where T: Neg<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + PartialOrd + Sum + Sqrt + Signed + Zero + One + Copy {
         let normal: VecN<T, N> = self.normalize();
     
         let mut vecs: [VecN<T, N>; N-1] = [VecN::zero(); N-1];

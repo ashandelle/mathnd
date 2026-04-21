@@ -1,6 +1,8 @@
 use std::{iter::Sum, ops::{Add, AddAssign, Div, DivAssign, Mul, Neg, Sub}};
 
-use crate::{vecn::VecN, bivecn::BiVecN, traits::{Abs, FromUsize, One, Sqrt, Two, Zero}};
+use num_traits::{FromPrimitive, One, Signed, Zero};
+
+use crate::{vecn::VecN, bivecn::BiVecN, traits::{Sqrt, Two}};
 
 #[derive(Debug, Clone, Copy)]
 pub struct MatN<T, const N: usize> {
@@ -114,9 +116,11 @@ impl<T, const N: usize> MatN<T, N> {
 
     // Orthonormalize
     pub fn orthonormalize(&self, eps: T, max: usize) -> MatN<T, N> where
-        T: Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + DivAssign + PartialOrd + Sum + Sqrt + Abs + Zero + FromUsize + Copy {
+        T: Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + DivAssign + PartialOrd + Sum + Sqrt + Signed + Zero + FromPrimitive + Copy {
         let mut mat = self.normalize_basis();
-        let n = (N - 1).max(2);
+
+        let n = T::from_usize((N - 1).max(2)).unwrap();
+        let NN = T::from_usize((N*N - N) / 2).unwrap();
 
         let mut dot: T = T::zero();
         let mut iter = 0;
@@ -129,11 +133,11 @@ impl<T, const N: usize> MatN<T, N> {
                 for j in (i+1)..N {
                     let d = mat.e[i].dot(mat.e[j]);
                     dot += d.abs();
-                    tmp.e[i] = tmp.e[i] - (mat.e[j] * d / T::fromusize(n));
-                    tmp.e[j] = tmp.e[j] - (mat.e[i] * d / T::fromusize(n));
+                    tmp.e[i] = tmp.e[i] - (mat.e[j] * d / n);
+                    tmp.e[j] = tmp.e[j] - (mat.e[i] * d / n);
                 }
             }
-            dot /= T::fromusize((N*N - N) / 2);
+            dot /= NN;
 
             mat = tmp.normalize_basis();
             iter += 1;
@@ -183,18 +187,20 @@ impl<T, const N: usize> MatN<T, N> {
 
     // Inverse
     pub fn inverse(self, eps: T, max: usize) -> MatN<T, N> where
-        T: Mul<Output = T> + Sub<Output = T> + Div<Output = T> + PartialOrd + Sum + Zero + One + Two + FromUsize + Copy {
+        T: Mul<Output = T> + Sub<Output = T> + Div<Output = T> + PartialOrd + Sum + Zero + One + Two + FromPrimitive + Copy {
         let mut inv = MatN::identity();
 
         let mut iter = 0;
         let mut len = T::zero();
         let I = MatN::identity();
 
+        let NN = T::from_usize(N*N).unwrap();
+
         while iter == 0 || (len > eps && iter < max) {
             let mut id = inv * self;
             inv = (inv * T::two()) - (id * inv);
             id = id - I;
-            len = id.dot(&id) / T::fromusize(N*N);
+            len = id.dot(&id) / NN;
             iter+=1;
         }
 
