@@ -120,7 +120,7 @@ impl<T, const N: usize> MatN<T, N> {
         let mut mat = self.normalize_basis();
 
         let n = T::from_usize((N - 1).max(2)).unwrap();
-        let NN = T::from_usize((N*N - N) / 2).unwrap();
+        let nn = T::from_usize((N*N - N) / 2).unwrap();
 
         let mut dot: T = T::zero();
         let mut iter = 0;
@@ -137,7 +137,7 @@ impl<T, const N: usize> MatN<T, N> {
                     tmp.e[j] = tmp.e[j] - (mat.e[i] * d / n);
                 }
             }
-            dot /= NN;
+            dot /= nn;
 
             mat = tmp.normalize_basis();
             iter += 1;
@@ -192,19 +192,61 @@ impl<T, const N: usize> MatN<T, N> {
 
         let mut iter = 0;
         let mut len = T::zero();
-        let I = MatN::identity();
+        let identity = MatN::identity();
 
-        let NN = T::from_usize(N*N).unwrap();
+        let nn = T::from_usize(N*N).unwrap();
 
         while iter == 0 || (len > eps && iter < max) {
             let mut id = inv * self;
             inv = (inv * T::two()) - (id * inv);
-            id = id - I;
-            len = id.dot(&id) / NN;
+            id = id - identity;
+            len = id.dot(&id) / nn;
             iter+=1;
         }
 
         inv
+    }
+
+    pub fn determinant(self, eps: T) -> T where T: Neg<Output = T> + PartialOrd + Signed + One + Copy {
+        let mut determinant = T::one();
+        let mut swapcount = 0;
+        let mut tmp = self.clone();
+
+        for i in 0..N {
+            let mut maxrow = i;
+            for k in (i+1)..N {
+                if tmp.e[k].e[i].abs() > tmp.e[maxrow].e[i].abs() {
+                    maxrow = k;
+                }
+            }
+
+            if maxrow != i {
+                swapcount += 1;
+                // let tmprow = tmp.e[i];
+                // tmp.e[i] = tmp.e[maxrow];
+                // tmp.e[maxrow] = tmprow;
+                tmp.e.swap(i, maxrow);
+            }
+
+            if tmp.e[i].e[i].abs() < eps {
+                return T::zero();
+            }
+
+            determinant = determinant * tmp.e[i].e[i];
+
+            for k in (i+1)..N {
+                let factor = tmp.e[k].e[i] / tmp.e[i].e[i];
+                for j in (i+1)..N {
+                    tmp.e[k].e[j] = tmp.e[k].e[j] - factor * tmp.e[i].e[j];
+                }
+            }
+        }
+
+        if swapcount % 2 != 0 {
+            determinant = -determinant;
+        }
+
+        determinant
     }
 
     // Matrix rotating v1 to v2
