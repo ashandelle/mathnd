@@ -21,14 +21,7 @@ mod tests {
     fn determinant() {
         let mut rng = rand::rng();
 
-        let identity: MatN<f64, 4> = MatN::new(
-            [
-                VecN::new([1.0, 0.0, 0.0, 0.0]),
-                VecN::new([0.0, 1.0, 0.0, 0.0]),
-                VecN::new([0.0, 0.0, 1.0, 0.0]),
-                VecN::new([0.0, 0.0, 0.0, 1.0]),
-            ]
-        );
+        let identity: MatN<f64, 4> = MatN::identity();
 
         assert_eq!(identity.determinant(1e-12), 1.0);
 
@@ -69,5 +62,20 @@ mod tests {
             let d: f64 = (0..4).into_iter().map(|i| tria.e[i].e[i]).product();
             assert!((tria.determinant(1e-12) - d).abs() < 1e-12);
         }
+    }
+
+    #[test]
+    fn orthogonal_product() {
+        let mut arr: [VecN<f64, 4>; 3] = [
+                VecN::basis(0),
+                VecN::basis(1),
+                VecN::basis(2),
+            ];
+        
+        assert_eq!(VecN::orthogonal_product(arr, 1e-12), VecN::basis(3));
+
+        arr.swap(0, 1);
+        
+        assert_eq!(VecN::orthogonal_product(arr, 1e-12), -VecN::basis(3));
     }
 }

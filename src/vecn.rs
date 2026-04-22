@@ -148,6 +148,15 @@ impl<T, const N: usize> VecN<T, N> {
         vecs
     }
 
+    pub fn orthogonal_product(vecs: [VecN<T, N>; N-1], eps: T) -> VecN<T, N> where T: Neg<Output = T> + PartialOrd + Signed + Zero + One + Copy {
+        let mut mat = MatN::new(std::array::from_fn(|i| if i < N-1 {vecs[i]} else {VecN::zero()}));
+
+        VecN::new(std::array::from_fn(|i| {
+            mat.e[N-1] = VecN::basis(i);
+            mat.determinant(eps)
+        }))
+    }
+
     pub fn rotate(&self, i: usize, j: usize, angle: T) -> VecN<T, N> where T: Mul<Output = T> + Add<Output = T> + Sub<Output = T> + CosSin + Copy {
         let mut r = self.clone();
 
