@@ -1,4 +1,4 @@
-use std::{iter::Sum, ops::{Add, AddAssign, BitXor, Div, Mul, Neg, Sub}};
+use std::{iter::Sum, ops::{Add, AddAssign, BitXor, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 
 use num_traits::{One, Signed, Zero};
 
@@ -29,10 +29,26 @@ impl<T, const N: usize> Add for VecN<T, N> where T: Add<Output = T> + Copy {
     }
 }
 
+impl<T, const N: usize> AddAssign for VecN<T, N> where T: AddAssign + Copy {
+    fn add_assign(&mut self, v: VecN<T, N>) {
+        for (i, val) in self.e.iter_mut().enumerate() {
+            *val += v.e[i];
+        }
+    }
+}
+
 impl<T, const N: usize> Sub for VecN<T, N> where T: Sub<Output = T> + Copy {
     type Output = VecN<T, N>;
     fn sub(self, v: VecN<T, N>) -> VecN<T, N> {
         VecN::new(std::array::from_fn(|i| self.e[i] - v.e[i]))
+    }
+}
+
+impl<T, const N: usize> SubAssign for VecN<T, N> where T: SubAssign + Copy {
+    fn sub_assign(&mut self, v: VecN<T, N>) {
+        for (i, val) in self.e.iter_mut().enumerate() {
+            *val -= v.e[i];
+        }
     }
 }
 
@@ -49,10 +65,26 @@ impl<T, const N: usize> Mul<T> for VecN<T, N> where T: Mul<Output = T> + Copy {
     }
 }
 
+impl<T, const N: usize> MulAssign<T> for VecN<T, N> where T: MulAssign + Copy {
+    fn mul_assign(&mut self, s: T) {
+        for val in self.e.iter_mut() {
+            *val *= s;
+        }
+    }
+}
+
 impl<T, const N: usize> Div<T> for VecN<T, N> where T: Div<Output = T> + Copy {
     type Output = VecN<T, N>;
     fn div(self, s: T) -> VecN<T, N> {
         VecN::new(std::array::from_fn(|i| self.e[i] / s))
+    }
+}
+
+impl<T, const N: usize> DivAssign<T> for VecN<T, N> where T: DivAssign + Copy {
+    fn div_assign(&mut self, s: T) {
+        for val in self.e.iter_mut() {
+            *val /= s;
+        }
     }
 }
 
@@ -148,7 +180,7 @@ impl<T, const N: usize> VecN<T, N> {
         vecs
     }
 
-    pub fn orthogonal_product(vecs: [VecN<T, N>; N-1], eps: T) -> VecN<T, N> where T: Neg<Output = T> + PartialOrd + Signed + Zero + One + Copy {
+    pub fn orthogonal_product(vecs: &[VecN<T, N>; N-1], eps: T) -> VecN<T, N> where T: Neg<Output = T> + PartialOrd + Signed + Zero + One + Copy {
         let mut mat = MatN::new(std::array::from_fn(|i| if i < N-1 {vecs[i]} else {VecN::zero()}));
 
         VecN::new(std::array::from_fn(|i| {

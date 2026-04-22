@@ -1,4 +1,4 @@
-use std::{iter::Sum, ops::{Add, AddAssign, Div, DivAssign, Mul, Neg, Sub}};
+use std::{iter::Sum, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 
 use num_traits::{FromPrimitive, One, Signed, Zero};
 
@@ -29,10 +29,26 @@ impl<T, const N: usize> Add for MatN<T, N> where T: Add<Output = T> + Copy {
     }
 }
 
+impl<T, const N: usize> AddAssign for MatN<T, N> where T: AddAssign + Copy {
+    fn add_assign(&mut self, v: MatN<T, N>) {
+        for (i, val) in self.e.iter_mut().enumerate() {
+            *val += v.e[i];
+        }
+    }
+}
+
 impl<T, const N: usize> Sub for MatN<T, N> where T: Sub<Output = T> + Copy {
     type Output = MatN<T, N>;
     fn sub(self, v: MatN<T, N>) -> MatN<T, N> {
         MatN::new(std::array::from_fn(|i| self.e[i] - v.e[i]))
+    }
+}
+
+impl<T, const N: usize> SubAssign for MatN<T, N> where T: SubAssign + Copy {
+    fn sub_assign(&mut self, v: MatN<T, N>) {
+        for (i, val) in self.e.iter_mut().enumerate() {
+            *val -= v.e[i];
+        }
     }
 }
 
@@ -43,10 +59,26 @@ impl<T, const N: usize> Mul<T> for MatN<T, N> where T: Mul<Output = T> + Copy {
     }
 }
 
+impl<T, const N: usize> MulAssign<T> for MatN<T, N> where T: MulAssign + Copy {
+    fn mul_assign(&mut self, s: T) {
+        for val in self.e.iter_mut() {
+            *val *= s;
+        }
+    }
+}
+
 impl<T, const N: usize> Div<T> for MatN<T, N> where T: Div<Output = T> + Copy {
     type Output = MatN<T, N>;
     fn div(self, s: T) -> MatN<T, N> {
         MatN::new(std::array::from_fn(|i| self.e[i] / s))
+    }
+}
+
+impl<T, const N: usize> DivAssign<T> for MatN<T, N> where T: DivAssign + Copy {
+    fn div_assign(&mut self, s: T) {
+        for val in self.e.iter_mut() {
+            *val /= s;
+        }
     }
 }
 
@@ -71,6 +103,15 @@ impl<T, const N: usize> Mul for MatN<T, N> where T: Mul<Output = T> + Sum + Copy
     fn mul(self, v: MatN<T, N>) -> MatN<T, N> {
         let t = v.transpose();
         MatN::new(std::array::from_fn(|i| t * self.e[i]))
+    }
+}
+
+impl<T, const N: usize> MulAssign for MatN<T, N> where T: Mul<Output = T> + MulAssign + Sum + Copy {
+    fn mul_assign(&mut self, v: MatN<T, N>) {
+        let t = v.transpose();
+        for val in self.e.iter_mut() {
+            *val = t * *val;
+        }
     }
 }
 
@@ -186,9 +227,9 @@ impl<T, const N: usize> MatN<T, N> {
     // }
 
     // Inverse
-    pub fn inverse(self, eps: T, max: usize) -> MatN<T, N> where
+    pub fn inverse(&self, eps: T, max: usize) -> MatN<T, N> where
         T: Mul<Output = T> + Sub<Output = T> + Div<Output = T> + PartialOrd + Sum + Zero + One + Two + FromPrimitive + Copy {
-        let mut inv = MatN::identity();
+        let mut inv: MatN<T, N> = MatN::identity();
 
         let mut iter = 0;
         let mut len = T::zero();
@@ -197,7 +238,7 @@ impl<T, const N: usize> MatN<T, N> {
         let nn = T::from_usize(N*N).unwrap();
 
         while iter == 0 || (len > eps && iter < max) {
-            let mut id = inv * self;
+            let mut id = inv * *self;
             inv = (inv * T::two()) - (id * inv);
             id = id - identity;
             len = id.dot(&id) / nn;
@@ -207,7 +248,7 @@ impl<T, const N: usize> MatN<T, N> {
         inv
     }
 
-    pub fn determinant(self, eps: T) -> T where T: Neg<Output = T> + PartialOrd + Signed + One + Copy {
+    pub fn determinant(&self, eps: T) -> T where T: Neg<Output = T> + PartialOrd + Signed + One + Copy {
         let mut determinant = T::one();
         let mut swapcount = 0;
         let mut tmp = self.clone();
@@ -248,6 +289,10 @@ impl<T, const N: usize> MatN<T, N> {
 
         determinant
     }
+
+    // pub fn exponential(self) -> MatN<T, N> {
+
+    // }
 
     // Matrix rotating v1 to v2
     pub fn from_vecn(v1: VecN<T, N>, v2: VecN<T, N>) -> Self where

@@ -1,4 +1,4 @@
-use std::{iter::Sum, ops::{Add, Div, Mul, Neg, Sub}};
+use std::{iter::Sum, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 
 use num_traits::{One, Zero};
 
@@ -35,6 +35,12 @@ impl<T, const N: usize> Add for BiVecN<T, N> where T: Add<Output = T> + Copy {
     }
 }
 
+impl<T, const N: usize> AddAssign for BiVecN<T, N> where T: AddAssign + Copy {
+    fn add_assign(&mut self, v: BiVecN<T, N>) {
+        self.m += v.m;
+    }
+}
+
 // Vector subtraction
 impl<T, const N: usize> Sub for BiVecN<T, N> where T: Sub<Output = T> + Copy {
     type Output = BiVecN<T, N>;
@@ -42,6 +48,12 @@ impl<T, const N: usize> Sub for BiVecN<T, N> where T: Sub<Output = T> + Copy {
         BiVecN {
             m: self.m - v.m,
         }
+    }
+}
+
+impl<T, const N: usize> SubAssign for BiVecN<T, N> where T: SubAssign + Copy {
+    fn sub_assign(&mut self, v: BiVecN<T, N>) {
+        self.m -= v.m;
     }
 }
 
@@ -55,6 +67,12 @@ impl<T, const N: usize> Mul<T> for BiVecN<T, N> where T: Mul<Output = T> + Copy 
     }
 }
 
+impl<T, const N: usize> MulAssign<T> for BiVecN<T, N> where T: MulAssign + Copy {
+    fn mul_assign(&mut self, s: T) {
+        self.m *= s;
+    }
+}
+
 // Scalar division
 impl<T, const N: usize> Div<T> for BiVecN<T, N> where T: Div<Output = T> + Copy {
     type Output = BiVecN<T, N>;
@@ -62,6 +80,12 @@ impl<T, const N: usize> Div<T> for BiVecN<T, N> where T: Div<Output = T> + Copy 
         BiVecN {
             m: self.m / s,
         }
+    }
+}
+
+impl<T, const N: usize> DivAssign<T> for BiVecN<T, N> where T: DivAssign + Copy {
+    fn div_assign(&mut self, s: T) {
+        self.m /= s;
     }
 }
 
@@ -84,7 +108,7 @@ impl<T, const N: usize> Div<T> for BiVecN<T, N> where T: Div<Output = T> + Copy 
 
 impl<T, const N: usize> BiVecN<T, N> {
     // Dot product
-    pub fn dot(self, b: BiVecN<T, N>) -> T where T: Mul<Output = T> + Div<Output = T> + Sum + Two + Copy {
+    pub fn dot(&self, b: BiVecN<T, N>) -> T where T: Mul<Output = T> + Div<Output = T> + Sum + Two + Copy {
         self.m.dot(&b.m) / T::two()
     }
 
@@ -104,6 +128,11 @@ impl<T, const N: usize> BiVecN<T, N> {
             m: (self.m - self.m.transpose()) / T::two(),
         }
     }
+
+    // https://arxiv.org/pdf/2506.18302
+    // pub fn exponential(&self) -> MatN<T, N> where T: Neg<Output = T> + Add<Output = T> + Mul<Output = T> + Sum + Copy {
+    //     let A = self.to_matn();
+    // }
 
     pub fn get_ij(&self, i: usize, j: usize) -> T where T: Copy {
         self.m.e[i].e[j]

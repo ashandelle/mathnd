@@ -72,10 +72,10 @@ mod tests {
                 VecN::basis(2),
             ];
         
-        assert_eq!(VecN::orthogonal_product(arr, 1e-12), VecN::basis(3));
+        assert_eq!(VecN::orthogonal_product(&arr, 1e-12), VecN::basis(3));
 
         arr.swap(0, 1);
         
-        assert_eq!(VecN::orthogonal_product(arr, 1e-12), -VecN::basis(3));
+        assert_eq!(VecN::orthogonal_product(&arr, 1e-12), -VecN::basis(3));
     }
 }
