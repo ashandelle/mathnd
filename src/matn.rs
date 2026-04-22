@@ -151,14 +151,20 @@ impl<T, const N: usize> MatN<T, N> {
     }
 
     // Normalize basis vectors
-    pub fn normalize_basis(&self) -> MatN<T, N> where T: Mul<Output = T> + Div<Output = T> + Sum + Sqrt + Copy {
-        MatN::new(std::array::from_fn(|i| self.e[i].normalize()))
+    pub fn normalize_basis(&mut self) where T: Mul<Output = T> + DivAssign + Sum + Sqrt + Copy {
+        for val in self.e.iter_mut() {
+            val.normalize();
+        }
+    }
+
+    pub fn normalized_basis(&self) -> MatN<T, N> where T: Mul<Output = T> + Div<Output = T> + Sum + Sqrt + Copy {
+        MatN::new(std::array::from_fn(|i| self.e[i].normalized()))
     }
 
     // Orthonormalize
     pub fn orthonormalize(&self, eps: T, max: usize) -> MatN<T, N> where
         T: Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + DivAssign + PartialOrd + Sum + Sqrt + Signed + Zero + FromPrimitive + Copy {
-        let mut mat = self.normalize_basis();
+        let mut mat = self.normalized_basis();
 
         let n = T::from_usize((N - 1).max(2)).unwrap();
         let nn = T::from_usize((N*N - N) / 2).unwrap();
@@ -180,7 +186,7 @@ impl<T, const N: usize> MatN<T, N> {
             }
             dot /= nn;
 
-            mat = tmp.normalize_basis();
+            mat = tmp.normalized_basis();
             iter += 1;
         }
 
@@ -228,7 +234,7 @@ impl<T, const N: usize> MatN<T, N> {
 
     // Inverse
     pub fn inverse(&self, eps: T, max: usize) -> MatN<T, N> where
-        T: Mul<Output = T> + Sub<Output = T> + Div<Output = T> + PartialOrd + Sum + Zero + One + Two + FromPrimitive + Copy {
+        T: Mul<Output = T> + Sub<Output = T> + SubAssign + Div<Output = T> + PartialOrd + Sum + Zero + One + Two + FromPrimitive + Copy {
         let mut inv: MatN<T, N> = MatN::identity();
 
         let mut iter = 0;
@@ -240,7 +246,7 @@ impl<T, const N: usize> MatN<T, N> {
         while iter == 0 || (len > eps && iter < max) {
             let mut id = inv * *self;
             inv = (inv * T::two()) - (id * inv);
-            id = id - identity;
+            id -= identity;
             len = id.dot(&id) / nn;
             iter+=1;
         }
@@ -248,7 +254,7 @@ impl<T, const N: usize> MatN<T, N> {
         inv
     }
 
-    pub fn determinant(&self, eps: T) -> T where T: Neg<Output = T> + PartialOrd + Signed + One + Copy {
+    pub fn determinant(&self, eps: T) -> T where T: Neg<Output = T> + SubAssign + PartialOrd + Signed + One + Copy {
         let mut determinant = T::one();
         let mut swapcount = 0;
         let mut tmp = self.clone();
@@ -278,7 +284,7 @@ impl<T, const N: usize> MatN<T, N> {
             for k in (i+1)..N {
                 let factor = tmp.e[k].e[i] / tmp.e[i].e[i];
                 for j in (i+1)..N {
-                    tmp.e[k].e[j] = tmp.e[k].e[j] - factor * tmp.e[i].e[j];
+                    tmp.e[k].e[j] -= factor * tmp.e[i].e[j];
                 }
             }
         }
@@ -297,8 +303,8 @@ impl<T, const N: usize> MatN<T, N> {
     // Matrix rotating v1 to v2
     pub fn from_vecn(v1: VecN<T, N>, v2: VecN<T, N>) -> Self where
         T: Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T> + Sqrt + Sum + Zero + One + Two + Copy {
-        let n1 = v1.normalize();
-        let n2 = v2.normalize();
+        let n1 = v1.normalized();
+        let n2 = v2.normalized();
         let v3 = n1 + n2;
         (Self::identity() -
         Self::mult_transpose_vecn(v3, v3) / (T::one() + n1.dot(n2)) +

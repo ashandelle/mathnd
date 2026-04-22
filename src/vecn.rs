@@ -124,11 +124,12 @@ impl<T, const N: usize> VecN<T, N> {
     }
 
     // Normalize
-    pub fn normalize(&self) -> VecN<T, N> where T: Mul<Output = T> + Div<Output = T> + Sqrt + Sum + Copy {
-        let mag: T = (self.e).iter()
-                                .map(|&x| x*x)
-                                .sum::<T>().sqrt();
-        VecN::new(std::array::from_fn(|i| self.e[i] / mag))
+    pub fn normalize(&mut self) where T: Mul<Output = T> + DivAssign + Sqrt + Sum + Copy {
+        *self /= self.length();
+    }
+
+    pub fn normalized(&self) -> VecN<T, N> where T: Mul<Output = T> + Div<Output = T> + Sqrt + Sum + Copy {
+        *self / self.length()
     }
 
     // Length
@@ -145,8 +146,8 @@ impl<T, const N: usize> VecN<T, N> {
                 .sum::<T>()
     }
 
-    pub fn orthonormal_basis(&self) -> [VecN<T, N>; N-1] where T: Neg<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + PartialOrd + Sum + Sqrt + Signed + Zero + One + Copy {
-        let normal: VecN<T, N> = self.normalize();
+    pub fn orthonormal_basis(&self) -> [VecN<T, N>; N-1] where T: Neg<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + SubAssign + PartialOrd + Sum + Sqrt + Signed + Zero + One + Copy {
+        let normal: VecN<T, N> = self.normalized();
     
         let mut vecs: [VecN<T, N>; N-1] = [VecN::zero(); N-1];
         let mut maxdot: T = T::zero();
@@ -171,16 +172,16 @@ impl<T, const N: usize> VecN<T, N> {
         }
     
         for j in 0..(N-1) {
-            let vec = vecs[j].normalize();
+            let vec = vecs[j].normalized();
             for k in j+1..(N-1) {
-                vecs[k] = vecs[k] - (vec * vec.dot(vecs[k]));
+                vecs[k] -= vec * vec.dot(vecs[k]);
             }
         }
     
         vecs
     }
 
-    pub fn orthogonal_product(vecs: &[VecN<T, N>; N-1], eps: T) -> VecN<T, N> where T: Neg<Output = T> + PartialOrd + Signed + Zero + One + Copy {
+    pub fn orthogonal_product(vecs: &[VecN<T, N>; N-1], eps: T) -> VecN<T, N> where T: Neg<Output = T> + SubAssign + PartialOrd + Signed + Zero + One + Copy {
         let mut mat = MatN::new(std::array::from_fn(|i| if i < N-1 {vecs[i]} else {VecN::zero()}));
 
         VecN::new(std::array::from_fn(|i| {
