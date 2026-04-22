@@ -162,7 +162,7 @@ impl<T, const N: usize> MatN<T, N> {
     }
 
     // Orthonormalize
-    pub fn orthonormalize(&self, eps: T, max: usize) -> MatN<T, N> where
+    pub fn orthonormalized(&self, eps: T, max: usize) -> MatN<T, N> where
         T: Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + DivAssign + PartialOrd + Sum + Sqrt + Signed + Zero + FromPrimitive + Copy {
         let mut mat = self.normalized_basis();
 
