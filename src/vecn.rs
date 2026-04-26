@@ -123,6 +123,18 @@ impl<T, const N: usize> VecN<T, N> {
         -(v.m * *self)
     }
 
+    pub fn reflect(&self, v: VecN<T, N>) -> VecN<T, N> where T: Mul<Output = T> + Sub<Output = T> + Sum + Two + Copy {
+        v - *self * (T::two() * self.dot(v))
+    }
+
+    pub fn reflect_mat(&self, v: MatN<T, N>) -> MatN<T, N> where T: Mul<Output = T> + Sub<Output = T> + Sum + Two + Copy {
+        MatN::new(std::array::from_fn(|i| self.reflect(v.e[i])))
+    }
+
+    // pub fn reflect_bivec(&self, v: BiVecN<T, N>) -> BiVecN<T, N> where T: Copy {
+        
+    // }
+
     // Normalize
     pub fn normalize(&mut self) where T: Mul<Output = T> + DivAssign + Sqrt + Sum + Copy {
         *self /= self.length();

@@ -269,9 +269,6 @@ impl<T, const N: usize> MatN<T, N> {
 
             if maxrow != i {
                 swapcount += 1;
-                // let tmprow = tmp.e[i];
-                // tmp.e[i] = tmp.e[maxrow];
-                // tmp.e[maxrow] = tmprow;
                 tmp.e.swap(i, maxrow);
             }
 
