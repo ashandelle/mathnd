@@ -125,7 +125,7 @@ impl<T, const N: usize> BiVecN<T, N> {
     // Skew
     pub fn skew(&self) -> BiVecN<T, N> where T: Sub<Output = T> + Div<Output = T> + Two + Copy {
         BiVecN {
-            m: (self.m - self.m.transpose()) / T::two(),
+            m: (self.m - self.m.transposed()) / T::two(),
         }
     }
 

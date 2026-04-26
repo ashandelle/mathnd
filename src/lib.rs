@@ -38,7 +38,7 @@ mod tests {
                     ),
                 };
 
-            let trans = rand1.transpose();
+            let trans = rand1.transposed();
 
             assert!((rand1.determinant(1e-12) - trans.determinant(1e-12)).abs() < 1e-12);
 

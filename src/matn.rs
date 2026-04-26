@@ -93,7 +93,7 @@ impl<T, const N: usize> Mul<BiVecN<T, N>> for MatN<T, N> where T: Mul<Output = T
     type Output = BiVecN<T, N>;
     fn mul(self, v: BiVecN<T, N>) -> BiVecN<T, N> {
         BiVecN {
-            m: (self * v.m) * self.transpose(),
+            m: (self * v.m) * self.transposed(),
         }.skew()
     }
 }
@@ -101,14 +101,14 @@ impl<T, const N: usize> Mul<BiVecN<T, N>> for MatN<T, N> where T: Mul<Output = T
 impl<T, const N: usize> Mul for MatN<T, N> where T: Mul<Output = T> + Sum + Copy {
     type Output = MatN<T, N>;
     fn mul(self, v: MatN<T, N>) -> MatN<T, N> {
-        let t = v.transpose();
+        let t = v.transposed();
         MatN::new(std::array::from_fn(|i| t * self.e[i]))
     }
 }
 
 impl<T, const N: usize> MulAssign for MatN<T, N> where T: Mul<Output = T> + MulAssign + Sum + Copy {
     fn mul_assign(&mut self, v: MatN<T, N>) {
-        let t = v.transpose();
+        let t = v.transposed();
         for val in self.e.iter_mut() {
             *val = t * *val;
         }
@@ -208,7 +208,7 @@ impl<T, const N: usize> MatN<T, N> {
     }
 
     // Transpose
-    pub fn transpose(&self) -> MatN<T, N> where T: Copy {
+    pub fn transposed(&self) -> MatN<T, N> where T: Copy {
         let mut mat: MatN<T, N> = self.clone();
         for i in 0..N {
             for j in 0..N {
@@ -298,16 +298,16 @@ impl<T, const N: usize> MatN<T, N> {
     // }
 
     // Matrix rotating v1 to v2
-    pub fn from_vecn(v1: VecN<T, N>, v2: VecN<T, N>) -> Self where
-        T: Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T> + Sqrt + Sum + Zero + One + Two + Copy {
-        let n1 = v1.normalized();
-        let n2 = v2.normalized();
-        let v3 = n1 + n2;
-        (Self::identity() -
-        Self::mult_transpose_vecn(v3, v3) / (T::one() + n1.dot(n2)) +
-        Self::mult_transpose_vecn(n2, n1) * T::two()) *
-        (v2.length() / v1.length())
-    }
+    // pub fn from_vecn(v1: VecN<T, N>, v2: VecN<T, N>) -> Self where
+    //     T: Add<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T> + Sqrt + Sum + Zero + One + Two + Copy {
+    //     let n1 = v1.normalized();
+    //     let n2 = v2.normalized();
+    //     let v3 = n1 + n2;
+    //     (Self::identity() -
+    //     Self::mult_transpose_vecn(v3, v3) / (T::one() + n1.dot(n2)) +
+    //     Self::mult_transpose_vecn(n2, n1) * T::two()) *
+    //     (v2.length() / v1.length())
+    // }
 
     // Matrix rotating v1 to v2
     // pub fn from_vecn_interpolate(v1: &VecN, v2: &VecN, t: N64) -> Self {
