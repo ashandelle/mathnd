@@ -78,4 +78,45 @@ mod tests {
         
         assert_eq!(VecN::orthogonal_product(&arr, 1e-12), -VecN::basis(3));
     }
+
+    #[test]
+    fn bivec_reflection() {
+        let mut rng = rand::rng();
+
+        for _n in 0..100 {
+            let rand1: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
+            let rand2: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
+
+            let rand3: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
+
+            let reflect1 = rand3.reflect(rand1);
+            let reflect2 = rand3.reflect(rand2);
+
+            let mut bivec1 = rand1 ^ rand2;
+            let bivec2 = reflect1 ^ reflect2;
+
+            bivec1 = rand3.reflect_bivec(bivec1);
+
+            let dif = bivec1 - bivec2;
+            let dot = dif.dot(dif);
+            assert!(dot < 1e-12);
+        }
+    }
+
+    #[test]
+    fn reflection() {
+        let mut rng = rand::rng();
+
+        for _n in 0..100 {
+            let rand1: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
+            let rand2: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
+
+            let mat = rand1.reflect_mat(MatN::identity());
+
+            let reflect1 = rand1.reflect(rand2);
+            let reflect2 = mat * rand2;
+
+            assert!((reflect1 - reflect2).length_sqr() < 1e-12);
+        }
+    }
 }
