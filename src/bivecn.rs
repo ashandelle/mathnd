@@ -151,11 +151,11 @@ impl<T, const N: usize> BiVecN<T, N> {
     }
 
     // Basis element
-    pub fn basis(i: usize, j: usize) -> Self where T: Zero + One + Copy {
+    pub fn basis(i: usize, j: usize) -> Self where T: Neg<Output = T> + Zero + One + Copy {
         let mut mat = MatN::zero();
         if i != j {
             mat.e[i].e[j] = T::one();
-            mat.e[j].e[i] = T::one();
+            mat.e[j].e[i] = -T::one();
         }
         Self {
             m: mat,
