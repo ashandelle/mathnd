@@ -293,6 +293,22 @@ impl<T, const N: usize> MatN<T, N> {
         determinant
     }
 
+    pub fn flip_if_negative(&mut self, eps: T) where T: Neg<Output = T> + SubAssign + PartialOrd + Signed + One + Copy {
+        let d = self.determinant(eps);
+
+        if d < T::zero() {
+            self.e[N - 1] = -self.e[N - 1];
+        }
+    }
+
+    pub fn flip_if_positive(&mut self, eps: T) where T: Neg<Output = T> + SubAssign + PartialOrd + Signed + One + Copy {
+        let d = self.determinant(eps);
+
+        if d > T::zero() {
+            self.e[N - 1] = -self.e[N - 1];
+        }
+    }
+
     // pub fn exponential(self) -> MatN<T, N> {
 
     // }
