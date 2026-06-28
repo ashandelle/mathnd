@@ -103,6 +103,20 @@ impl<T, const N: usize> BitXor for VecN<T, N> where T: Sub<Output = T> + Mul<Out
 //     }
 // }
 
+impl<T, const N: usize> From<[T; N]> for VecN<T, N> {
+    fn from(arr: [T; N]) -> Self {
+        Self {
+            e: arr,
+        }
+    }
+}
+
+impl<T, const N: usize> Into<[T; N]> for VecN<T, N> {
+    fn into(self) -> [T; N] {
+        self.e
+    }
+}
+
 impl<T, const N: usize> VecN<T, N> {
     pub fn new(e: [T; N]) -> Self {
         VecN {

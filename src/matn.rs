@@ -128,6 +128,20 @@ impl<T, const N: usize> MulAssign for MatN<T, N> where T: Mul<Output = T> + MulA
 //     }
 // }
 
+impl<T, const N: usize> From<[[T; N]; N]> for MatN<T, N> {
+    fn from(arr: [[T; N]; N]) -> Self {
+        Self {
+            e: arr.map(|v| v.into()),
+        }
+    }
+}
+
+impl<T, const N: usize> Into<[[T; N]; N]> for MatN<T, N> {
+    fn into(self) -> [[T; N]; N] {
+        self.e.map(|v| v.into())
+    }
+}
+
 impl<T, const N: usize> MatN<T, N> {
     pub fn new(e: [VecN<T, N>; N]) -> Self {
         MatN {
