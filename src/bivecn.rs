@@ -1,8 +1,10 @@
 use std::{iter::Sum, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 
 use num_traits::{One, Zero};
+use rand::prelude::*;
+use rand_distr::StandardNormal;
 
-use crate::{matn::MatN, traits::{Sqrt, Two}};
+use crate::{matn::MatN, traits::{Sqrt, Two}, vecn::VecN};
 
 #[derive(Debug, Clone, Copy)]
 pub struct BiVecN<T, const N: usize> {
@@ -107,6 +109,22 @@ impl<T, const N: usize> DivAssign<T> for BiVecN<T, N> where T: DivAssign + Copy 
 // }
 
 impl<T, const N: usize> BiVecN<T, N> {
+    pub fn new(m: MatN<T, N>) -> Self {
+        BiVecN {
+            m: m,
+        }
+    }
+
+    pub fn rand_normal(rng: &mut ThreadRng) -> Self where T: Neg<Output = T> + Zero + Copy, StandardNormal: Distribution<T> {
+        let mut m = MatN::new(std::array::from_fn(|i| VecN::new(std::array::from_fn(|j| if i < j {rng.sample(StandardNormal)} else {T::zero()}))));
+        for i in 0..N {
+            for j in 0..i {
+                m.e[i].e[j] = -m.e[j].e[i];
+            }
+        }
+        Self::new(m)
+    }
+
     // Dot product
     pub fn dot(&self, b: BiVecN<T, N>) -> T where T: Mul<Output = T> + Div<Output = T> + Sum + Two + Copy {
         self.m.dot(&b.m) / T::two()

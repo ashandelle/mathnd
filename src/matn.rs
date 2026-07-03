@@ -1,6 +1,8 @@
 use std::{iter::{Product, Sum}, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 
 use num_traits::{FromPrimitive, One, Signed, Zero};
+use rand::prelude::*;
+use rand_distr::StandardNormal;
 
 use crate::{vecn::VecN, bivecn::BiVecN, traits::{Sqrt, Two}};
 
@@ -157,6 +159,10 @@ impl<T, const N: usize> MatN<T, N> {
         MatN {
             e: e,
         }
+    }
+
+    pub fn rand_normal(rng: &mut ThreadRng) -> Self where StandardNormal: Distribution<T> {
+        MatN::new(std::array::from_fn(|_i| VecN::rand_normal(rng)))
     }
 
     // Dot product

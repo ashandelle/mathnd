@@ -26,17 +26,9 @@ mod tests {
         assert_eq!(identity.determinant(1e-12), 1.0);
 
         for _n in 0..100 {
-            let rand1: MatN<f64, 4> = MatN {
-                    e: std::array::from_fn(|_i|
-                        VecN::new(std::array::from_fn(|_j| rng.sample(StandardNormal)))
-                    ),
-                };
+            let rand1: MatN<f64, 4> = MatN::rand_normal(&mut rng);
             
-            let rand2: MatN<f64, 4> = MatN {
-                    e: std::array::from_fn(|_i|
-                        VecN::new(std::array::from_fn(|_j| rng.sample(StandardNormal)))
-                    ),
-                };
+            let rand2: MatN<f64, 4> = MatN::rand_normal(&mut rng);
 
             let trans = rand1.transposed();
 
@@ -84,10 +76,10 @@ mod tests {
         let mut rng = rand::rng();
 
         for _n in 0..100 {
-            let rand1: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
-            let rand2: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
+            let rand1: VecN<f64, 4> = VecN::rand_normal(&mut rng);
+            let rand2: VecN<f64, 4> = VecN::rand_normal(&mut rng);
 
-            let rand3: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
+            let rand3: VecN<f64, 4> = VecN::rand_normal(&mut rng);
 
             let reflect1 = rand3.reflect(rand1);
             let reflect2 = rand3.reflect(rand2);
@@ -108,8 +100,8 @@ mod tests {
         let mut rng = rand::rng();
 
         for _n in 0..100 {
-            let rand1: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
-            let rand2: VecN<f64, 4> = VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)));
+            let rand1: VecN<f64, 4> = VecN::rand_normal(&mut rng);
+            let rand2: VecN<f64, 4> = VecN::rand_normal(&mut rng);
 
             let mat = rand1.reflect_mat(MatN::identity());
 

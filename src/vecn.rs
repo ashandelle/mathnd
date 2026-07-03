@@ -1,6 +1,8 @@
 use std::{iter::Sum, ops::{Add, AddAssign, BitXor, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 
 use num_traits::{One, Signed, Zero};
+use rand::prelude::*;
+use rand_distr::StandardNormal;
 
 use crate::{bivecn::BiVecN, matn::MatN, traits::{CosSin, Sqrt, Two}};
 
@@ -116,6 +118,10 @@ impl<T, const N: usize> VecN<T, N> {
         VecN {
             e: e,
         }
+    }
+
+    pub fn rand_normal(rng: &mut ThreadRng) -> Self where StandardNormal: Distribution<T> {
+        VecN::new(std::array::from_fn(|_i| rng.sample(StandardNormal)))
     }
 
     // Dot product
