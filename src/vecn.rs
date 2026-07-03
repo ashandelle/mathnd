@@ -52,12 +52,6 @@ impl<T, const N: usize> SubAssign for VecN<T, N> where T: SubAssign + Copy {
     }
 }
 
-// impl<T, const N: usize> Mul<VecN<T, N>> for T where T: Mul<Output = T> + Copy {
-//     type Output = VecN<T, N>;
-//     fn mul(self, v: VecN<T, N>) -> VecN<T, N> {
-//         VecN::new(std::array::from_fn(|i| self * v.e[i]))
-//     }
-// }
 impl<T, const N: usize> Mul<T> for VecN<T, N> where T: Mul<Output = T> + Copy {
     type Output = VecN<T, N>;
     fn mul(self, s: T) -> VecN<T, N> {

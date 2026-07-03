@@ -129,9 +129,7 @@ impl<T, const N: usize> BiVecN<T, N> {
         }
     }
 
-    // https://arxiv.org/pdf/2506.18302
-    // pub fn exponential(&self) -> MatN<T, N> where T: Neg<Output = T> + Add<Output = T> + Mul<Output = T> + Sum + Copy {
-    //     let A = self.to_matn();
+    // pub fn exponential(&self) -> MatN<T, N> where T: Copy {
     // }
 
     pub fn get_ij(&self, i: usize, j: usize) -> T where T: Copy {
