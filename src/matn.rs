@@ -1,4 +1,5 @@
 use std::{iter::{Product, Sum}, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
+use std::fmt::Debug;
 
 use bit_iter::BitIter;
 use num_traits::{FromPrimitive, One, Signed, Zero};
@@ -326,7 +327,7 @@ impl<T, const N: usize> MatN<T, N> {
         }
     }
 
-    pub fn exponential(&self, iter: usize) -> MatN<T, N> where T: Mul<Output = T> + Div<Output = T> + Sum + Zero + One + FromPrimitive + Copy {
+    pub fn exponential_taylor(&self, iter: usize) -> MatN<T, N> where T: Mul<Output = T> + Div<Output = T> + Sum + Zero + One + FromPrimitive + Copy {
         let mut out: MatN<T, N> = Self::identity();
 
         let mut pows: Vec<MatN<T, N>> = vec![*self];
@@ -344,9 +345,23 @@ impl<T, const N: usize> MatN<T, N> {
         out
     }
 
-    // pub fn logarithm(self) -> MatN<T, N> {
+    pub fn logarithm_taylor(&self, iter: usize) -> MatN<T, N> where T: Neg<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + Sum + Zero + One + FromPrimitive + Copy {
+        let mut out: MatN<T, N> = Self::zero();
 
-    // }
+        let mut pows: Vec<MatN<T, N>> = vec![Self::identity() - *self];
+
+        for i in 1..(iter.ilog2() as usize) {
+            let m = *pows.get(i-1).unwrap();
+            pows.push(m * m);
+        }
+
+        for i in 1..iter {
+            let pow = BitIter::from(i).map(|j| pows[j]).product::<MatN<T, N>>();
+            out = out + pow / T::from_usize(i).unwrap();
+        }
+
+        -out
+    }
 
     // pub fn skew_exponential(self) -> MatN<T, N> {
 

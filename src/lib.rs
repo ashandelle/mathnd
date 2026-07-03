@@ -113,17 +113,18 @@ mod tests {
         }
     }
 
-    // #[test]
-    // fn exponential() {
-    //     let mut rng = rand::rng();
+    #[test]
+    fn explog_taylor() {
+        let mut rng = rand::rng();
 
-    //     for _n in 0..10 {
-    //         let rand1: MatN<f64, 3> = MatN::rand_normal(&mut rng);
+        for _n in 0..100 {
+            let mat: MatN<f64, 4> = MatN::rand_normal(&mut rng) * 0.1;
 
-    //         let exp = rand1.exponential(32);
+            let exp = mat.exponential_taylor(32);
 
-    //         print!("{:?}", rand1);
-    //         print!("{:?}", exp);
-    //     }
-    // }
+            let log = exp.logarithm_taylor(128);
+
+            assert!((mat - log).length_sqr() < 1e-8);
+        }
+    }
 }
