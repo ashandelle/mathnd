@@ -1,10 +1,11 @@
 use std::{iter::{Product, Sum}, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 
+use bit_iter::BitIter;
 use num_traits::{FromPrimitive, One, Signed, Zero};
 use rand::prelude::*;
 use rand_distr::StandardNormal;
 
-use crate::{vecn::VecN, bivecn::BiVecN, traits::{Sqrt, Two}};
+use crate::{bivecn::BiVecN, traits::{Sqrt, Two}, util::factorial, vecn::VecN};
 
 #[derive(Debug, Clone, Copy)]
 pub struct MatN<T, const N: usize> {
@@ -325,7 +326,33 @@ impl<T, const N: usize> MatN<T, N> {
         }
     }
 
-    // pub fn exponential(self) -> MatN<T, N> {
+    pub fn exponential(&self, iter: usize) -> MatN<T, N> where T: Mul<Output = T> + Div<Output = T> + Sum + Zero + One + FromPrimitive + Copy {
+        let mut out: MatN<T, N> = Self::identity();
+
+        let mut pows: Vec<MatN<T, N>> = vec![*self];
+
+        for i in 1..(iter.ilog2() as usize) {
+            let m = *pows.get(i-1).unwrap();
+            pows.push(m * m);
+        }
+
+        for i in 1..iter {
+            let pow = BitIter::from(i).map(|j| pows[j]).product::<MatN<T, N>>();
+            out = out + pow / factorial(i);
+        }
+
+        out
+    }
+
+    // pub fn logarithm(self) -> MatN<T, N> {
+
+    // }
+
+    // pub fn skew_exponential(self) -> MatN<T, N> {
+
+    // }
+
+    // pub fn ortho_logarithm(self) -> MatN<T, N> {
 
     // }
 

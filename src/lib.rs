@@ -5,6 +5,7 @@
 //     left + right
 // }
 
+pub mod util;
 pub mod vecn;
 pub mod matn;
 pub mod bivecn;
@@ -111,4 +112,18 @@ mod tests {
             assert!((reflect1 - reflect2).length_sqr() < 1e-12);
         }
     }
+
+    // #[test]
+    // fn exponential() {
+    //     let mut rng = rand::rng();
+
+    //     for _n in 0..10 {
+    //         let rand1: MatN<f64, 3> = MatN::rand_normal(&mut rng);
+
+    //         let exp = rand1.exponential(32);
+
+    //         print!("{:?}", rand1);
+    //         print!("{:?}", exp);
+    //     }
+    // }
 }
