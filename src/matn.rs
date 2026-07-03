@@ -1,4 +1,4 @@
-use std::{iter::Sum, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
+use std::{iter::{Product, Sum}, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 
 use num_traits::{FromPrimitive, One, Signed, Zero};
 
@@ -112,6 +112,16 @@ impl<T, const N: usize> MulAssign for MatN<T, N> where T: Mul<Output = T> + MulA
         for val in self.e.iter_mut() {
             *val = t * *val;
         }
+    }
+}
+
+impl<T, const N: usize> Product for MatN<T, N> where T: Mul<Output = T> + Sum + Zero + One + Copy {
+    fn product<I: Iterator<Item = Self>>(iter: I) -> Self {
+        let mut total: MatN<T, N> = Self::identity();
+        for item in iter {
+            total = total * item;
+        }
+        total
     }
 }
 
