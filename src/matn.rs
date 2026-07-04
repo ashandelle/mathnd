@@ -1,7 +1,7 @@
 use std::{iter::{Product, Sum}, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 use std::fmt::Debug;
 
-use num_traits::{FromPrimitive, One, Signed, Zero};
+use num_traits::{One, Zero};
 use rand::prelude::*;
 use rand_distr::StandardNormal;
 
