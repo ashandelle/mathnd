@@ -160,19 +160,19 @@ mod tests {
             assert!((exp1 - exp2).length_sqr() < 1e-8);
         }
 
-        for n in 0..2 {
-            // let mat: MatN<f64, 4> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
+        // for n in 0..1000 {
+        //     let mat: MatN<f64, 4> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
 
-            // let expt = mat.exponential_taylor(64);
-            // let exp1 = mat.skew_exponential(1e-8);
+        //     let expt = mat.exponential_taylor(64);
+        //     let exp1 = mat.skew_exponential(1e-8);
 
-            // assert!((exp1 - expt).length_sqr() < 1e-8);
+        //     assert!((exp1 - expt).length_sqr() < 1e-8);
 
-            // let log = exp1.ortho_logarithm(1e-8);
-            // let exp2 = log.skew_exponential(1e-8);
+        //     let log = exp1.ortho_logarithm(1e-8);
+        //     let exp2 = log.skew_exponential(1e-8);
 
-            // assert!((exp1 - exp2).length_sqr() < 1e-8);
-        }
+        //     assert!((exp1 - exp2).length_sqr() < 1e-8);
+        // }
     }
 
     #[test]

@@ -369,6 +369,9 @@ impl<T, const N: usize> MatN<T, N> {
 
     pub fn skew_exponential(&self, eps: T) -> MatN<T, N> where T: Neg<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + Sum + Sqrt + PartialOrd + Zero + One + Trig + Copy {
         match N {
+            1 => {
+                MatN::identity()
+            }
             2 => {
                 let theta: T = self.e[0].e[1];
                 let cos = theta.cos();
@@ -389,13 +392,16 @@ impl<T, const N: usize> MatN<T, N> {
                 MatN::identity() + *self * (len.sin() / len) + (*self * *self) * ((T::one() - len.cos()) / lensqr)
             },
             _ => {
-                MatN::identity()
+                panic!("skew_exponential is not yet implemented for matrices of dimension greater than 3")
             },
         }
     }
 
     pub fn ortho_logarithm(&self, eps: T) -> MatN<T, N> where T: Debug + Neg<Output = T> + Sub<Output = T> + Div<Output = T> + Sqrt + Sum + PartialOrd + Zero + One + Two + Trig + FromPrimitive + Copy {
         match N {
+            1 => {
+                MatN::zero()
+            }
             2 => {
                 let theta = self.e[0].e[1].atan2(self.e[0].e[0]);
                 let mut mat = MatN::zero();
@@ -419,7 +425,7 @@ impl<T, const N: usize> MatN<T, N> {
                 (*self - self.transposed()) * (theta / s)
             },
             _ => {
-                MatN::identity()
+                panic!("ortho_logarithm is not yet implemented for matrices of dimension greater than 3")
             },
         }
     }
