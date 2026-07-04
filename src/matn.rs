@@ -468,6 +468,10 @@ impl<T, const N: usize> MatN<T, N> {
         Self::new(std::array::from_fn(|i| v2 * v1.e[i]))
     }
 
+    pub fn get(&self, i: usize, j: usize) -> T where T: Copy {
+        self.e[i].e[j]
+    }
+
     // Zero
     pub fn zero() -> Self where T: Zero + Copy {
         Self::new([VecN::zero(); N])

@@ -150,8 +150,8 @@ impl<T, const N: usize> BiVecN<T, N> {
     // pub fn exponential(&self) -> MatN<T, N> where T: Copy {
     // }
 
-    pub fn get_ij(&self, i: usize, j: usize) -> T where T: Copy {
-        self.m.e[i].e[j]
+    pub fn get(&self, i: usize, j: usize) -> T where T: Copy {
+        self.m.get(i, j)
     }
 
     // To MatN
