@@ -516,9 +516,9 @@ impl<T> MatN<T, 4> {
         //     VecN::new([T::zero(), T::zero(), T::one(), T::zero()]),
         // ]);
 
-        // let mut S = *self - a1**self*a1 - a2**self*a2 - a3**self*a3;
+        // let mut s = *self - a1**self*a1 - a2**self*a2 - a3**self*a3;
 
-        let mut M = MatN::new([
+        let m = MatN::new([
             VecN::new([
                 self.e[0].e[0]+self.e[1].e[1]+self.e[2].e[2]+self.e[3].e[3],
                 self.e[0].e[1]-self.e[2].e[3]-self.e[1].e[0]+self.e[3].e[2],
@@ -545,11 +545,11 @@ impl<T> MatN<T, 4> {
             ]),
         ]);
 
-        // let Y = S / S.determinant(eps).sqrt().sqrt();
-        let Y = M / M.determinant(eps).sqrt().sqrt();
+        // let y = s / s.determinant(eps).sqrt().sqrt();
+        let y = m / m.determinant(eps).sqrt().sqrt();
 
-        let X = *self * Y.transposed();
+        let x = *self * y.transposed();
 
-        (X, Y)
+        (x, y)
     }
 }
