@@ -6,7 +6,7 @@ use num_traits::{FromPrimitive, One, Signed, Zero};
 use rand::prelude::*;
 use rand_distr::StandardNormal;
 
-use crate::{bivecn::BiVecN, traits::{Sqrt, Two}, util::factorial, vecn::VecN};
+use crate::{bivecn::BiVecN, traits::{Sqrt, Trig, Two}, util::factorial, vecn::VecN};
 
 #[derive(Debug, Clone, Copy)]
 pub struct MatN<T, const N: usize> {
@@ -239,6 +239,10 @@ impl<T, const N: usize> MatN<T, N> {
                 .sum::<T>()
     }
 
+    pub fn trace(&self) -> T where T: Sum + Copy {
+        (0..N).map(|i| self.e[i].e[i]).sum()
+    }
+
     // Transpose
     pub fn transposed(&self) -> MatN<T, N> where T: Copy {
         let mut mat: MatN<T, N> = self.clone();
@@ -363,13 +367,62 @@ impl<T, const N: usize> MatN<T, N> {
         -out
     }
 
-    // pub fn skew_exponential(self) -> MatN<T, N> {
+    pub fn skew_exponential(&self, eps: T) -> MatN<T, N> where T: Neg<Output = T> + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + Sum + Sqrt + PartialOrd + Zero + One + Trig + Copy {
+        match N {
+            2 => {
+                let theta: T = self.e[0].e[1];
+                let cos = theta.cos();
+                let sin = theta.sin();
+                let mut mat = MatN::zero();
+                mat.e[0].e[0] = cos; mat.e[0].e[1] = sin;
+                mat.e[1].e[0] = -sin; mat.e[1].e[1] = cos;
+                mat
+            },
+            3 => {
+                let lensqr: T = self.e[0].e[1]*self.e[0].e[1] + self.e[0].e[2]*self.e[0].e[2] + self.e[1].e[2]*self.e[1].e[2];
+                let len = lensqr.sqrt();
 
-    // }
+                if len < eps {
+                    return MatN::identity();
+                }
 
-    // pub fn ortho_logarithm(self) -> MatN<T, N> {
+                MatN::identity() + *self * (len.sin() / len) + (*self * *self) * ((T::one() - len.cos()) / lensqr)
+            },
+            _ => {
+                MatN::identity()
+            },
+        }
+    }
 
-    // }
+    pub fn ortho_logarithm(&self, eps: T) -> MatN<T, N> where T: Debug + Neg<Output = T> + Sub<Output = T> + Div<Output = T> + Sqrt + Sum + PartialOrd + Zero + One + Two + Trig + FromPrimitive + Copy {
+        match N {
+            2 => {
+                let theta = self.e[0].e[1].atan2(self.e[0].e[0]);
+                let mut mat = MatN::zero();
+                mat.e[0].e[1] = theta;
+                mat.e[1].e[0] = -theta;
+                mat
+            },
+            3 => {
+                let trace: T = self.trace();
+
+                let theta = ((trace - T::one()) / T::two()).acos();
+
+                if theta < eps {
+                    return MatN::zero();
+                }
+
+                let mut s = trace - T::one();
+                s = s * s;
+                s = (T::from_usize(4).unwrap() - s).sqrt();
+
+                (*self - self.transposed()) * (theta / s)
+            },
+            _ => {
+                MatN::identity()
+            },
+        }
+    }
 
     // Matrix rotating v1 to v2
     // pub fn from_vecn(v1: VecN<T, N>, v2: VecN<T, N>) -> Self where

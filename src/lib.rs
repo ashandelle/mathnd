@@ -13,7 +13,7 @@ pub mod traits;
 
 #[cfg(test)]
 mod tests {
-    use crate::{matn::MatN, vecn::VecN};
+    use crate::{bivecn::BiVecN, matn::MatN, vecn::VecN};
 
     use rand::prelude::*;
     use rand_distr::StandardNormal;
@@ -26,7 +26,7 @@ mod tests {
 
         assert_eq!(identity.determinant(1e-12), 1.0);
 
-        for _n in 0..100 {
+        for _n in 0..1000 {
             let rand1: MatN<f64, 4> = MatN::rand_normal(&mut rng);
             
             let rand2: MatN<f64, 4> = MatN::rand_normal(&mut rng);
@@ -76,7 +76,7 @@ mod tests {
     fn bivec_reflection() {
         let mut rng = rand::rng();
 
-        for _n in 0..100 {
+        for _n in 0..1000 {
             let rand1: VecN<f64, 4> = VecN::rand_normal(&mut rng);
             let rand2: VecN<f64, 4> = VecN::rand_normal(&mut rng);
 
@@ -100,7 +100,7 @@ mod tests {
     fn reflection() {
         let mut rng = rand::rng();
 
-        for _n in 0..100 {
+        for _n in 0..1000 {
             let rand1: VecN<f64, 4> = VecN::rand_normal(&mut rng);
             let rand2: VecN<f64, 4> = VecN::rand_normal(&mut rng);
 
@@ -117,7 +117,7 @@ mod tests {
     fn explog_taylor() {
         let mut rng = rand::rng();
 
-        for _n in 0..100 {
+        for _n in 0..1000 {
             let mat: MatN<f64, 4> = MatN::rand_normal(&mut rng) * 0.1;
 
             let exp = mat.exponential_taylor(32);
@@ -126,5 +126,52 @@ mod tests {
 
             assert!((mat - log).length_sqr() < 1e-8);
         }
+    }
+
+    #[test]
+    fn skewortho_explog() {
+        let mut rng = rand::rng();
+
+        for n in 0..1000 {
+            let mat: MatN<f64, 2> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
+
+            let expt = mat.exponential_taylor(32);
+            let exp1 = mat.skew_exponential(1e-8);
+
+            assert!((exp1 - expt).length_sqr() < 1e-8);
+
+            let log = exp1.ortho_logarithm(1e-8);
+            let exp2 = log.skew_exponential(1e-8);
+
+            assert!((exp1 - exp2).length_sqr() < 1e-8);
+        }
+
+        for n in 0..1000 {
+            let mat: MatN<f64, 3> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
+
+            let expt = mat.exponential_taylor(64);
+            let exp1 = mat.skew_exponential(1e-8);
+
+            assert!((exp1 - expt).length_sqr() < 1e-8);
+
+            let log = exp1.ortho_logarithm(1e-8);
+            let exp2 = log.skew_exponential(1e-8);
+
+            assert!((exp1 - exp2).length_sqr() < 1e-8);
+        }
+
+        // for n in 0..1000 {
+        //     let mat: MatN<f64, 4> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
+
+        //     let expt = mat.exponential_taylor(64);
+        //     let exp1 = mat.skew_exponential(1e-8);
+
+        //     assert!((exp1 - expt).length_sqr() < 1e-8);
+
+        //     let log = exp1.ortho_logarithm(1e-8);
+        //     let exp2 = log.skew_exponential(1e-8);
+
+        //     assert!((exp1 - exp2).length_sqr() < 1e-8);
+        // }
     }
 }
