@@ -4,7 +4,7 @@ use num_traits::{One, Signed, Zero};
 use rand::prelude::*;
 use rand_distr::StandardNormal;
 
-use crate::{bivecn::BiVecN, matn::MatN, traits::{CosSin, Sqrt, Two}};
+use crate::{bivecn::BiVecN, matn::MatN, traits::{Trig, Sqrt, Two}};
 
 #[derive(Debug, Clone, Copy)]
 pub struct VecN<T, const N: usize> {
@@ -216,7 +216,7 @@ impl<T, const N: usize> VecN<T, N> {
         }))
     }
 
-    pub fn rotate(&self, i: usize, j: usize, angle: T) -> VecN<T, N> where T: Mul<Output = T> + Add<Output = T> + Sub<Output = T> + CosSin + Copy {
+    pub fn rotate(&self, i: usize, j: usize, angle: T) -> VecN<T, N> where T: Mul<Output = T> + Add<Output = T> + Sub<Output = T> + Trig + Copy {
         let mut r = self.clone();
 
         let a = r.e[i];

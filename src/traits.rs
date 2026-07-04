@@ -20,27 +20,79 @@ macro_rules! impl_sqrt {
 
 impl_sqrt!(f32, f64);
 
-pub trait CosSin{
+pub trait Trig{
     fn cos(self) -> Self;
     fn sin(self) -> Self;
+    fn tan(self) -> Self;
+
+    fn acos(self) -> Self;
+    fn asin(self) -> Self;
+    fn atan(self) -> Self;
+
+    fn cosh(self) -> Self;
+    fn sinh(self) -> Self;
+    fn tanh(self) -> Self;
+
+    fn acosh(self) -> Self;
+    fn asinh(self) -> Self;
+    fn atanh(self) -> Self;
+
+    fn atan2(self, other: Self) -> Self;
 }
 
-macro_rules! impl_cossin {
+macro_rules! impl_trig {
     ( $($ty:ty),* ) => {
         $(
-            impl CosSin for $ty {
+            impl Trig for $ty {
                 fn cos(self) -> Self {
                     self.cos()
                 }
                 fn sin(self) -> Self {
                     self.sin()
                 }
+                fn tan(self) -> Self {
+                    self.tan()
+                }
+
+                fn acos(self) -> Self {
+                    self.acos()
+                }
+                fn asin(self) -> Self {
+                    self.asin()
+                }
+                fn atan(self) -> Self {
+                    self.atan()
+                }
+
+                fn cosh(self) -> Self {
+                    self.cosh()
+                }
+                fn sinh(self) -> Self {
+                    self.sinh()
+                }
+                fn tanh(self) -> Self {
+                    self.tanh()
+                }
+
+                fn acosh(self) -> Self {
+                    self.acosh()
+                }
+                fn asinh(self) -> Self {
+                    self.asinh()
+                }
+                fn atanh(self) -> Self {
+                    self.atanh()
+                }
+
+                fn atan2(self, other: Self) -> Self {
+                    self.atan2(other)
+                }
             }
         )*
     };
 }
 
-impl_cossin!(
+impl_trig!(
     f32, f64
 );
 
