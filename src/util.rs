@@ -7,3 +7,10 @@ pub fn factorial<T>(i: usize) -> T where T: Mul<Output = T> + FromPrimitive {
         acc * j
     }).unwrap()
 }
+
+pub trait True {}
+pub trait False {}
+
+pub struct Assert<const COND: bool> {}
+impl True for Assert<true> {}
+impl False for Assert<false> {}
