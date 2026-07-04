@@ -6,10 +6,13 @@
 // }
 
 pub mod util;
+pub mod traits;
+
 pub mod vecn;
 pub mod matn;
 pub mod bivecn;
-pub mod traits;
+
+pub mod matrixmath;
 
 #[cfg(test)]
 mod tests {
@@ -136,42 +139,57 @@ mod tests {
             let mat: MatN<f64, 2> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
 
             let expt = mat.exponential_taylor(32);
-            let exp1 = mat.skew_exponential(1e-8);
+            let exp1 = mat.skew_exponential_2d();
+            // let exp2 = mat.skew_exponential();
 
             assert!((exp1 - expt).length_sqr() < 1e-8);
+            // assert!((exp1 - exp2).length_sqr() < 1e-8);
 
-            let log = exp1.ortho_logarithm(1e-8);
-            let exp2 = log.skew_exponential(1e-8);
+            let log1 = exp1.ortho_logarithm_2d();
+            // let log2 = exp1.ortho_logarithm();
+            let exp3 = log1.skew_exponential_2d();
 
-            assert!((exp1 - exp2).length_sqr() < 1e-8);
+            // assert!((log1 - log2).length_sqr() < 1e-8);
+
+            assert!((exp1 - exp3).length_sqr() < 1e-8);
         }
 
         for n in 0..1000 {
             let mat: MatN<f64, 3> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
 
             let expt = mat.exponential_taylor(64);
-            let exp1 = mat.skew_exponential(1e-8);
+            let exp1 = mat.skew_exponential_3d(1e-8);
+            // let exp2 = mat.skew_exponential();
 
             assert!((exp1 - expt).length_sqr() < 1e-8);
+            // assert!((exp1 - exp2).length_sqr() < 1e-8);
 
-            let log = exp1.ortho_logarithm(1e-8);
-            let exp2 = log.skew_exponential(1e-8);
+            let log1 = exp1.ortho_logarithm_3d(1e-8);
+            // let log2 = exp1.ortho_logarithm();
+            let exp3 = log1.skew_exponential_3d(1e-8);
 
-            assert!((exp1 - exp2).length_sqr() < 1e-8);
+            // assert!((log1 - log2).length_sqr() < 1e-8);
+
+            assert!((exp1 - exp3).length_sqr() < 1e-8);
         }
 
         // for n in 0..1000 {
         //     let mat: MatN<f64, 4> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
 
         //     let expt = mat.exponential_taylor(64);
-        //     let exp1 = mat.skew_exponential(1e-8);
+        //     let exp1 = mat.skew_exponential_4d(1e-8);
+        //     let exp2 = mat.skew_exponential();
 
         //     assert!((exp1 - expt).length_sqr() < 1e-8);
-
-        //     let log = exp1.ortho_logarithm(1e-8);
-        //     let exp2 = log.skew_exponential(1e-8);
-
         //     assert!((exp1 - exp2).length_sqr() < 1e-8);
+
+        //     let log1 = exp1.ortho_logarithm_4d();
+        //     let log2 = exp1.ortho_logarithm();
+        //     let exp3 = log1.skew_exponential_4d();
+
+        //     assert!((log1 - log2).length_sqr() < 1e-8);
+
+        //     assert!((exp1 - exp3).length_sqr() < 1e-8);
         // }
     }
 
