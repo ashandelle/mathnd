@@ -482,3 +482,64 @@ impl<T, const N: usize> MatN<T, N> {
         mat
     }
 }
+
+impl<T> MatN<T, 4> {
+    pub fn isoclinic_decomposition(&self, eps: T) -> (MatN<T, 4>, MatN<T, 4>) where T: Debug + Neg<Output = T> + Mul<Output = T> + Div<Output = T> + Sub<Output = T> + Sum + SubAssign + PartialOrd + Signed + Sqrt + Zero + One + FromPrimitive + Copy {
+        // let a1: MatN<T, 4>  = MatN::new([
+        //     VecN::new([T::zero(), T::zero(), T::zero(),-T::one()]),
+        //     VecN::new([T::zero(), T::zero(),-T::one(), T::zero()]),
+        //     VecN::new([T::zero(), T::one(), T::zero(), T::zero()]),
+        //     VecN::new([T::one(), T::zero(), T::zero(), T::zero()]),
+        // ]);
+
+        // let a2: MatN<T, 4>  = MatN::new([
+        //     VecN::new([ T::zero(), T::zero(), T::one(), T::zero()]),
+        //     VecN::new([ T::zero(), T::zero(), T::zero(),-T::one()]),
+        //     VecN::new([-T::one(), T::zero(), T::zero(), T::zero()]),
+        //     VecN::new([ T::zero(), T::one(), T::zero(), T::zero()]),
+        // ]);
+
+        // let a3: MatN<T, 4>  = MatN::new([
+        //     VecN::new([T::zero(),-T::one(), T::zero(), T::zero()]),
+        //     VecN::new([T::one(), T::zero(), T::zero(), T::zero()]),
+        //     VecN::new([T::zero(), T::zero(), T::zero(),-T::one()]),
+        //     VecN::new([T::zero(), T::zero(), T::one(), T::zero()]),
+        // ]);
+
+        // let mut S = *self - a1**self*a1 - a2**self*a2 - a3**self*a3;
+
+        let mut M = MatN::new([
+            VecN::new([
+                self.e[0].e[0]+self.e[1].e[1]+self.e[2].e[2]+self.e[3].e[3],
+                self.e[0].e[1]-self.e[2].e[3]-self.e[1].e[0]+self.e[3].e[2],
+                self.e[0].e[2]+self.e[1].e[3]-self.e[2].e[0]-self.e[3].e[1],
+                self.e[0].e[3]-self.e[1].e[2]-self.e[3].e[0]+self.e[2].e[1]
+            ]),
+            VecN::new([
+                self.e[1].e[0]+self.e[2].e[3]-self.e[3].e[2]-self.e[0].e[1],
+                self.e[1].e[1]+self.e[2].e[2]+self.e[3].e[3]+self.e[0].e[0],
+                self.e[1].e[2]-self.e[2].e[1]+self.e[3].e[0]-self.e[0].e[3],
+                self.e[1].e[3]-self.e[2].e[0]-self.e[3].e[1]+self.e[0].e[2]
+            ]),
+            VecN::new([
+                self.e[2].e[0]-self.e[1].e[3]-self.e[0].e[2]+self.e[3].e[1],
+                self.e[2].e[1]-self.e[1].e[2]+self.e[0].e[3]-self.e[3].e[0],
+                self.e[2].e[2]+self.e[1].e[1]+self.e[0].e[0]+self.e[3].e[3],
+                self.e[2].e[3]+self.e[1].e[0]-self.e[0].e[1]-self.e[3].e[2]
+            ]),
+            VecN::new([
+                self.e[3].e[0]-self.e[0].e[3]+self.e[1].e[2]-self.e[2].e[1],
+                self.e[3].e[1]-self.e[0].e[2]-self.e[1].e[3]+self.e[2].e[0],
+                self.e[3].e[2]+self.e[0].e[1]-self.e[1].e[0]-self.e[2].e[3],
+                self.e[3].e[3]+self.e[0].e[0]+self.e[1].e[1]+self.e[2].e[2]
+            ]),
+        ]);
+
+        // let Y = S / S.determinant(eps).sqrt().sqrt();
+        let Y = M / M.determinant(eps).sqrt().sqrt();
+
+        let X = *self * Y.transposed();
+
+        (X, Y)
+    }
+}
