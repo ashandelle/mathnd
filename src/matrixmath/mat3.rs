@@ -6,7 +6,7 @@ use crate::{matn::MatN, traits::{Sqrt, Trig, Two}};
 
 impl<T> MatN<T, 3> {
     pub fn skew_exponential_3d(&self, eps: T) -> Self where T: Mul<Output = T> + Sub<Output = T> + Div<Output = T> + Sum + Sqrt + PartialOrd + Zero + One + Trig + Copy {
-        let lensqr: T = self.e[0].e[1]*self.e[0].e[1] + self.e[0].e[2]*self.e[0].e[2] + self.e[1].e[2]*self.e[1].e[2];
+        let lensqr = self.length_sqr() / T::two();
         let len = lensqr.sqrt();
 
         if len < eps {

@@ -173,24 +173,24 @@ mod tests {
             assert!((exp1 - exp3).length_sqr() < 1e-8);
         }
 
-        // for n in 0..1000 {
-        //     let mat: MatN<f64, 4> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
+        for n in 0..1000 {
+            let mat: MatN<f64, 4> = if n == 0 {MatN::zero()} else {BiVecN::rand_normal(&mut rng).to_matn()};
 
-        //     let expt = mat.exponential_taylor(64);
-        //     let exp1 = mat.skew_exponential_4d(1e-8);
-        //     let exp2 = mat.skew_exponential();
+            let expt = mat.exponential_taylor(64);
+            let exp1 = mat.skew_exponential_4d(1e-8);
+            // let exp2 = mat.skew_exponential();
 
-        //     assert!((exp1 - expt).length_sqr() < 1e-8);
-        //     assert!((exp1 - exp2).length_sqr() < 1e-8);
+            assert!((exp1 - expt).length_sqr() < 1e-8);
+            // assert!((exp1 - exp2).length_sqr() < 1e-8);
 
-        //     let log1 = exp1.ortho_logarithm_4d();
-        //     let log2 = exp1.ortho_logarithm();
-        //     let exp3 = log1.skew_exponential_4d();
+            let log1 = exp1.ortho_logarithm_4d(1e-8);
+            // let log2 = exp1.ortho_logarithm();
+            let exp3 = log1.skew_exponential_4d(1e-8);
 
-        //     assert!((log1 - log2).length_sqr() < 1e-8);
+            // assert!((log1 - log2).length_sqr() < 1e-8);
 
-        //     assert!((exp1 - exp3).length_sqr() < 1e-8);
-        // }
+            assert!((exp1 - exp3).length_sqr() < 1e-8);
+        }
     }
 
     #[test]
@@ -198,11 +198,13 @@ mod tests {
         let mut rng = rand::rng();
 
         for n in 0..1000 {
-            let mat: MatN<f64, 4> = if n == 0 {MatN::identity()} else {MatN::rand_normal(&mut rng).orthonormalized(1e-8, 32)};
+            let mut mat: MatN<f64, 4> = if n == 0 {MatN::identity()} else {MatN::rand_normal(&mut rng).orthonormalized(1e-8, 32)};
+            mat.flip_if_negative(1e-8);
 
             let (x, y) = mat.isoclinic_decomposition(1e-8);
 
             assert!((mat - x*y).length_sqr() < 1e-8);
+            assert!((mat - y*x).length_sqr() < 1e-8);
         }
     }
 }
