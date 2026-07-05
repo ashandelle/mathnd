@@ -14,6 +14,8 @@ pub mod bivecn;
 
 pub mod matrixmath;
 
+// pub mod ga;
+
 #[cfg(test)]
 mod tests {
     use crate::{bivecn::BiVecN, matn::MatN, vecn::VecN};
