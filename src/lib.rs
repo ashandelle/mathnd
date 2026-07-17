@@ -1,5 +1,5 @@
-#![feature(generic_const_exprs)]
-#![allow(incomplete_features)]
+// #![feature(generic_const_exprs)]
+// #![allow(incomplete_features)]
 
 // pub fn add(left: u64, right: u64) -> u64 {
 //     left + right
@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn orthogonal_product() {
-        let mut arr: [VecN<f64, 4>; 3] = [
+        let mut arr: Vec<VecN<f64, 4>> = vec![
                 VecN::basis(0),
                 VecN::basis(1),
                 VecN::basis(2),

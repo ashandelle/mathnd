@@ -182,10 +182,10 @@ impl<T, const N: usize> VecN<T, N> {
                 .sum::<T>()
     }
 
-    pub fn orthonormal_basis(&self) -> [VecN<T, N>; N-1] where T: Neg<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + SubAssign + PartialOrd + Sum + Sqrt + Signed + Zero + One + Copy {
+    pub fn orthonormal_basis(&self) -> Vec<VecN<T, N>> where T: Neg<Output = T> + Sub<Output = T> + Mul<Output = T> + Div<Output = T> + AddAssign + SubAssign + PartialOrd + Sum + Sqrt + Signed + Zero + One + Copy {
         let normal: VecN<T, N> = self.normalized();
     
-        let mut vecs: [VecN<T, N>; N-1] = [VecN::zero(); N-1];
+        let mut vecs: Vec<VecN<T, N>> = vec![VecN::zero(); N-1];
         let mut maxdot: T = T::zero();
         let mut maxi: usize = 0;
     
@@ -210,14 +210,15 @@ impl<T, const N: usize> VecN<T, N> {
         for j in 0..(N-1) {
             let vec = vecs[j].normalized();
             for k in j+1..(N-1) {
-                vecs[k] -= vec * vec.dot(vecs[k]);
+                let delta = vec * vec.dot(vecs[k]);
+                vecs[k] -= delta;
             }
         }
     
         vecs
     }
 
-    pub fn orthogonal_product(vecs: &[VecN<T, N>; N-1], eps: T) -> VecN<T, N> where T: Neg<Output = T> + SubAssign + PartialOrd + Signed + Zero + One + Copy {
+    pub fn orthogonal_product(vecs: &Vec<VecN<T, N>>, eps: T) -> VecN<T, N> where T: Neg<Output = T> + SubAssign + PartialOrd + Signed + Zero + One + Copy {
         let mut mat = MatN::new(std::array::from_fn(|i| if i < N-1 {vecs[i]} else {VecN::zero()}));
 
         VecN::new(std::array::from_fn(|i| {
