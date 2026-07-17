@@ -118,6 +118,16 @@ impl<T, const N: usize> MulAssign for MatN<T, N> where T: Mul<Output = T> + MulA
     }
 }
 
+impl<T, const N: usize> Sum for MatN<T, N> where T: Zero + Copy {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        let mut total: MatN<T, N> = Self::zero();
+        for item in iter {
+            total = total + item;
+        }
+        total
+    }
+}
+
 impl<T, const N: usize> Product for MatN<T, N> where T: Mul<Output = T> + Sum + Zero + One + Copy {
     fn product<I: Iterator<Item = Self>>(iter: I) -> Self {
         let mut total: MatN<T, N> = Self::identity();

@@ -93,6 +93,16 @@ impl<T, const N: usize> BitXor for VecN<T, N> where T: Sub<Output = T> + Mul<Out
     }
 }
 
+impl<T, const N: usize> Sum for VecN<T, N> where T: Zero + Copy {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        let mut total: VecN<T, N> = Self::zero();
+        for item in iter {
+            total = total + item;
+        }
+        total
+    }
+}
+
 // impl fmt::Display for VecN {
 //     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 //         write!(f, "{:?}", self.e)

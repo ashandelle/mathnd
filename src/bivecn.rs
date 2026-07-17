@@ -91,6 +91,16 @@ impl<T, const N: usize> DivAssign<T> for BiVecN<T, N> where T: DivAssign + Copy 
     }
 }
 
+impl<T, const N: usize> Sum for BiVecN<T, N> where T: Zero + Copy {
+    fn sum<I: Iterator<Item = Self>>(iter: I) -> Self {
+        let mut total: BiVecN<T, N> = Self::zero();
+        for item in iter {
+            total = total + item;
+        }
+        total
+    }
+}
+
 // impl fmt::Display for BiVecN {
 //     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 //         // write!(f, "{:?}", self.e)
@@ -107,6 +117,20 @@ impl<T, const N: usize> DivAssign<T> for BiVecN<T, N> where T: DivAssign + Copy 
 //         write!(f, "]")
 //     }
 // }
+
+impl<T, const N: usize> From<MatN<T, N>> for BiVecN<T, N> {
+    fn from(mat: MatN<T, N>) -> Self {
+        Self {
+            m: mat,
+        }
+    }
+}
+
+impl<T, const N: usize> Into<MatN<T, N>> for BiVecN<T, N> {
+    fn into(self) -> MatN<T, N> {
+        self.m
+    }
+}
 
 impl<T, const N: usize> BiVecN<T, N> {
     pub fn new(m: MatN<T, N>) -> Self {
