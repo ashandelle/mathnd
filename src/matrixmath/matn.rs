@@ -1,10 +1,10 @@
 use std::{iter::Sum, ops::{Div, Mul, Neg, Sub}};
-use std::fmt::Debug;
+// use std::fmt::Debug;
 
 use bit_iter::BitIter;
 use num_traits::{FromPrimitive, One, Signed, Zero};
 
-use crate::{matn::MatN, traits::{Sqrt, Two}, util::factorial};
+use crate::{matn::MatN, traits::Sqrt, util::factorial};
 
 impl<T, const N: usize> MatN<T, N> {
     pub fn orthonormalized(&self, eps: T, max: usize) -> MatN<T, N> where

@@ -227,6 +227,14 @@ impl<T, const N: usize> VecN<T, N> {
         }))
     }
 
+    pub fn orthogonal_product_flipped(vecs: &Vec<VecN<T, N>>, eps: T) -> VecN<T, N> where T: Neg<Output = T> + SubAssign + PartialOrd + Signed + Zero + One + Copy {
+        if N % 2 == 0 {
+            -Self::orthogonal_product(vecs, eps)
+        } else {
+            Self::orthogonal_product(vecs, eps)
+        }
+    }
+
     pub fn rotate(&self, i: usize, j: usize, angle: T) -> VecN<T, N> where T: Mul<Output = T> + Add<Output = T> + Sub<Output = T> + Trig + Copy {
         let mut r = self.clone();
 
