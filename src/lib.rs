@@ -23,6 +23,26 @@ mod tests {
     use rand::prelude::*;
     use rand_distr::StandardNormal;
 
+    // #[test]
+    // fn inverse() {
+    //     let mut rng = rand::rng();
+
+    //     let identity: MatN<f64, 4> = MatN::identity();
+
+    //     for _n in 0..1000 {
+    //         let matrix: MatN<f64, 4> = MatN::rand_normal(&mut rng);
+
+    //         let inverse = matrix.inverse(1e-8, 64);
+
+    //         println!("{:?}", matrix);
+    //         println!("{:?}", inverse);
+    //         println!("{:?}", matrix.determinant(1e-8));
+
+    //         assert!((matrix*inverse - identity).length_sqr() < 1e-12);
+    //         assert!((inverse*matrix - identity).length_sqr() < 1e-12);
+    //     }
+    // }
+
     #[test]
     fn determinant() {
         let mut rng = rand::rng();

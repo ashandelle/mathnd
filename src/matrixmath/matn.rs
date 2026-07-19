@@ -1,4 +1,5 @@
 use std::{iter::Sum, ops::{Div, Mul, Neg, Sub}};
+use std::fmt::Debug;
 
 use bit_iter::BitIter;
 use num_traits::{FromPrimitive, One, Signed, Zero};
@@ -37,26 +38,27 @@ impl<T, const N: usize> MatN<T, N> {
         mat
     }
 
-    pub fn inverse(&self, eps: T, max: usize) -> MatN<T, N> where
-        T: Mul<Output = T> + Sub<Output = T> + Div<Output = T> + PartialOrd + Sum + Zero + One + Two + FromPrimitive + Copy {
-        let mut inv: MatN<T, N> = MatN::identity();
+    // pub fn inverse(&self, eps: T, max: usize) -> MatN<T, N> where
+    //     T: Debug + Mul<Output = T> + Sub<Output = T> + Div<Output = T> + PartialOrd + Sum + Zero + One + Two + FromPrimitive + Copy {
+    //     let mut inv: MatN<T, N> = MatN::identity();
 
-        let mut iter = 0;
-        let mut len = T::zero();
-        let identity = MatN::identity();
+    //     let mut iter = 0;
+    //     let mut len = T::zero();
+    //     let identity = MatN::identity();
 
-        let nn = T::from_usize(N*N).unwrap();
+    //     let nn = T::from_usize(N*N).unwrap();
 
-        while iter == 0 || (len > eps && iter < max) {
-            let mut id = inv * *self;
-            inv = (inv * T::two()) - (id * inv);
-            id = id - identity;
-            len = id.dot(&id) / nn;
-            iter+=1;
-        }
+    //     while iter == 0 || (len > eps && iter < max) {
+    //         let mut id = inv * *self;
+    //         inv = (inv * T::two()) - (id * inv);
+    //         id = id - identity;
+    //         len = id.dot(&id) / nn;
+    //         iter+=1;
+    //         println!("{:?}", inv);
+    //     }
 
-        inv
-    }
+    //     inv
+    // }
 
     pub fn determinant(&self, eps: T) -> T where T: Neg<Output = T> + PartialOrd + Signed + One + Copy {
         let mut determinant = T::one();
